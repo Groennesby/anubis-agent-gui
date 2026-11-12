@@ -126,6 +126,16 @@ func main() {
 		_ = json.NewEncoder(w).Encode(map[string]any{"scroll_path": scrollPath})
 	})
 
+	mux.HandleFunc("/api/update", func(w http.ResponseWriter, r *http.Request) {
+		out, err := exec.Command("/opt/homebrew/bin/annubis", "update").CombinedOutput()
+		msg := string(out)
+		if err != nil && msg == "" {
+			msg = err.Error()
+		}
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(map[string]any{"message": msg})
+	})
+
 	addr := fmt.Sprintf("127.0.0.1:%d", *portFlag)
 	ln, err := net.Listen("tcp", addr)
 	if err != nil {

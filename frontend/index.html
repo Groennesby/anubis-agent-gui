@@ -281,6 +281,10 @@
           <strong>🔁 /retry — Opnieuw Proberen</strong>
           <small>Genereer het laatste antwoord opnieuw</small>
         </div>
+        <div class="nav-item" onclick="runSelfUpdate()">
+          <strong>⬆️ /update — In-Place Update</strong>
+          <small>Update Anubis direct zonder herinstallatie</small>
+        </div>
       </div>
 
       <div>
@@ -312,6 +316,7 @@
         <button class="lapis-btn" onclick="openModelPicker()">🤖 /model</button>
         <button onclick="runRenewSession()">🔄 /renew</button>
         <button onclick="runRetryLast()">🔁 /retry</button>
+        <button onclick="runSelfUpdate()">⬆️ /update</button>
         <button onclick="weighCommandPrompt()">⚖️ Test Scales of Ma'at</button>
       </div>
       <div class="chat-stream" id="chatStream">
@@ -475,6 +480,14 @@
       refreshState();
     }
 
+    async function runSelfUpdate() {
+      appendMsg('anubis', '⬆️ [/update] Anubis Agent wordt in-place geüpdatet...');
+      const res = await fetch('/api/update', {method: 'POST'});
+      const data = await res.json();
+      appendMsg('anubis', data.message || '⬆️ [/update] Voltooid!');
+      refreshState();
+    }
+
     function openModelPicker() {
       const cur = document.getElementById('modelSelect').value;
       document.getElementById('modalModelDropdown').value = cur;
@@ -534,6 +547,10 @@
       }
       if (lower === '/retry') {
         await runRetryLast();
+        return;
+      }
+      if (lower === '/update') {
+        await runSelfUpdate();
         return;
       }
       if (lower === '/model' || lower.startsWith('/model ')) {
